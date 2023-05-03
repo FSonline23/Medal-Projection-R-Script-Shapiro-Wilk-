@@ -1,0 +1,42 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+
+# Read_CSV, other Wise import data set manually. Uncomment as appropriate.
+filePath <- "INPUT_FILEPATH"
+swimming_data <- read.csv(file = filePath)
+# swimming_data <- INPUT_DATASET_NAME
+
+view(swimming_data)
+```
+
+```{r}
+# Filter Unqiue Swimmers, Loop through each swimmer and perform Shapiro Wilk's Test
+UniqueSwimmers <- unique(swimming_data$full_name_computed)
+for (i in 1:length(UniqueSwimmers)) {
+  Swimmer <- filter(swimming_data, full_name_computed == UniqueSwimmers[i])
+  Swimmer$swim_time <-as.numeric(Swimmer$swim_time)
+  print(UniqueSwimmers[i])
+  print(shapiro.test(Swimmer$swim_time))
+}
+```
+
+```{r}
+# Graph Plotting and Individual Swimmer Analysis
+Swimmer <- filter(swimming_data, full_name_computed == "INPUT_NAME")
+Swimmer$swim_time <-as.numeric(Swimmer$swim_time)
+shapiro.test(Swimmer$swim_time)
+
+library(ggplot2)
+ggplot(Swimmer, aes(x=swim_time)) + geom_histogram()
+qplot(sample = swim_time, data = Swimmer)
+cat("Mean is:", mean(Swimmer$swim_time), "\n")
+cat("Stdev is:", sd(Swimmer$swim_time), "\n")
+cat("No of Observations:", length(Swimmer$swim_time))
+plot(density(Swimmer$swim_time))
+qqnorm(Swimmer$swim_time);qqline(Swimmer$swim_time, col = 2)
+```
